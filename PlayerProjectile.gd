@@ -7,9 +7,15 @@ var power: float = 1.0
 var life: float = 0.7
 var item_name: String = ""
 
+# Tumble: heavier items spin lazily, light ones spin fast — set from the
+# item's "tumble_speed" stat, with a random spin direction per throw.
+var spin_speed: float = 8.0
+var spin_angle: float = 0.0
+
 
 func update(delta: float) -> bool:
 	position += velocity * delta
+	spin_angle += spin_speed * delta
 	life -= delta
 	queue_redraw()
 	return life <= 0.0
@@ -18,6 +24,6 @@ func update(delta: float) -> bool:
 func _draw() -> void:
 	var dir := velocity.normalized() if velocity.length() > 0.001 else Vector2.RIGHT
 	if item_name != "":
-		ItemVisuals.draw(self, item_name, dir)
+		ItemVisuals.draw(self, item_name, dir.rotated(spin_angle))
 	else:
 		draw_circle(Vector2.ZERO, radius, Color(0.8, 0.8, 0.8))
